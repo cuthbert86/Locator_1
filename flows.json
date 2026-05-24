@@ -1,0 +1,650 @@
+[
+    {
+        "id": "07924ea1e91d19b0",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "75707312b5eb0fc2",
+        "type": "function",
+        "z": "07924ea1e91d19b0",
+        "name": "function 1",
+        "func": "function parseSensorPayload(jsonPayload) {\n\n    // If payload is a JSON string, convert it to object\n    const data = typeof jsonPayload === \"string\"\n        ? JSON.parse(jsonPayload)\n        : jsonPayload;\n\n    // -------------------------\n    // Location data\n    // -------------------------\n    const latitude = data.location?.latitude !== null\n        ? Number(data.location.latitude)\n        : null;\n\n    const longitude = data.location?.longitude !== null\n        ? Number(data.location.longitude)\n        : null;\n\n    const accuracy = data.location?.accuracy !== null\n        ? Number(data.location.accuracy)\n        : null;\n\n    // -------------------------\n    // Device information\n    // -------------------------\n    const deviceName = String(data.device);\n\n    // -------------------------\n    // Sensor readings\n    // -------------------------\n    const humidityPercent = Number(\n        data.sensors.bme280.humidity_percent\n    );\n\n    const temperatureC = Number(\n        data.sensors.bme280.temperature_c\n    );\n\n    const pressureHpa = Number(\n        data.sensors.bme280.pressure_hpa\n    );\n\n    const altitudeM = Number(\n        data.sensors.bme280.altitude_m\n    );\n\n    // -------------------------\n    // Timestamp\n    // -------------------------\n    const timestampUnix = Number(data.timestamp);\n\n    // Convert Unix timestamp to JavaScript Date object\n    const timestampDate = new Date(timestampUnix * 1000);\n\n    // -------------------------\n    // Return clean structured object\n    // -------------------------\n    return {\n        latitude,\n        longitude,\n        accuracy,\n        deviceName,\n        humidityPercent,\n        temperatureC,\n        pressureHpa,\n        altitudeM,\n        timestampUnix,\n        timestampDate\n    };\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 200,
+        "wires": [
+            [
+                "08c2308db2764160",
+                "435fdaf60afb62bc",
+                "20c4d469d23cf1dd"
+            ]
+        ]
+    },
+    {
+        "id": "10e3257a4418fae0",
+        "type": "json",
+        "z": "07924ea1e91d19b0",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": true,
+        "x": 390,
+        "y": 200,
+        "wires": [
+            [
+                "75707312b5eb0fc2"
+            ]
+        ]
+    },
+    {
+        "id": "08c2308db2764160",
+        "type": "ui_table",
+        "z": "07924ea1e91d19b0",
+        "group": "3794f677915a57a5",
+        "name": "Sensor Data and GPS table",
+        "order": 2,
+        "width": 8,
+        "height": 8,
+        "columns": [
+            {
+                "field": "latitude",
+                "title": "Latitude",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Longitude",
+                "title": "Longitude",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "accuracy",
+                "title": "Accuracy",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "deviceName",
+                "title": "Device ID",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "humidityPercent",
+                "title": "Humidity Percentage",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "temperatureC",
+                "title": "Temperature C",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "pressureHpa",
+                "title": "Pressure ",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "altitudeM",
+                "title": "Altitude (meters)",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "timestampDate",
+                "title": "Date Time Stamp",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 900,
+        "y": 200,
+        "wires": [],
+        "info": "        latitude,\n        longitude,\n        accuracy,\n        deviceName,\n        humidityPercent,\n        temperatureC,\n        pressureHpa,\n        altitudeM,\n        timestampUnix,\n        timestampDate"
+    },
+    {
+        "id": "7505322b05fb5310",
+        "type": "ui-flowviewer",
+        "z": "07924ea1e91d19b0",
+        "name": "",
+        "group": "a1d00f67ce3d3fe7",
+        "order": 2,
+        "width": 6,
+        "flow": "",
+        "height": 8,
+        "x": 950,
+        "y": 460,
+        "wires": []
+    },
+    {
+        "id": "435fdaf60afb62bc",
+        "type": "ui-table",
+        "z": "07924ea1e91d19b0",
+        "group": "a1d00f67ce3d3fe7",
+        "name": "",
+        "label": "",
+        "order": 1,
+        "width": 0,
+        "height": 0,
+        "maxrows": 0,
+        "passthru": false,
+        "autocols": true,
+        "showSearch": true,
+        "deselect": true,
+        "selectionType": "click",
+        "columns": [],
+        "mobileBreakpoint": "lg",
+        "mobileBreakpointType": "defaults",
+        "action": "append",
+        "className": "",
+        "x": 710,
+        "y": 460,
+        "wires": [
+            [
+                "7505322b05fb5310"
+            ]
+        ]
+    },
+    {
+        "id": "20c4d469d23cf1dd",
+        "type": "ui_worldmap",
+        "z": "07924ea1e91d19b0",
+        "group": "3794f677915a57a5",
+        "order": 1,
+        "width": 8,
+        "height": 7,
+        "name": "",
+        "lat": "",
+        "lon": "",
+        "zoom": "",
+        "layer": "OSMG",
+        "cluster": "",
+        "maxage": "",
+        "usermenu": "hide",
+        "layers": "hide",
+        "panit": "false",
+        "panlock": "false",
+        "zoomlock": "false",
+        "hiderightclick": "true",
+        "coords": "none",
+        "showgrid": "false",
+        "showruler": "false",
+        "allowFileDrop": "false",
+        "path": "/worldmap",
+        "overlist": "DR,CO,RA,DN,HM",
+        "maplist": "OSMG,OSMC,EsriC,EsriS,EsriT,EsriDG,UKOS",
+        "mapname": "",
+        "mapurl": "",
+        "mapopt": "",
+        "mapwms": false,
+        "x": 840,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "bfca6a128192ef5e",
+        "type": "worldmap",
+        "z": "07924ea1e91d19b0",
+        "name": "",
+        "lat": "",
+        "lon": "",
+        "zoom": "",
+        "layer": "OSMC",
+        "cluster": "",
+        "maxage": "",
+        "usermenu": "show",
+        "layers": "show",
+        "panit": "false",
+        "panlock": "false",
+        "zoomlock": "false",
+        "hiderightclick": "false",
+        "coords": "none",
+        "showgrid": "false",
+        "showruler": "false",
+        "allowFileDrop": "false",
+        "path": "/worldmap",
+        "overlist": "BU",
+        "maplist": "OSMC,UKOS,OpTop",
+        "mapname": "",
+        "mapurl": "",
+        "mapopt": "",
+        "mapwms": false,
+        "x": 780,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "1900c6a449ce2cc9",
+        "type": "function",
+        "z": "07924ea1e91d19b0",
+        "name": "function 2",
+        "func": "function parseSensorPayload(jsonPayload) {\n\n    // If payload is a JSON string, convert it to object\n    const data = typeof jsonPayload === \"string\"\n        ? JSON.parse(jsonPayload)\n        : jsonPayload;\n\n    // -------------------------\n    // Location data\n    // -------------------------\n    const latitude = data.location?.latitude !== null\n        ? Number(data.location.latitude)\n        : null;\n\n    const longitude = data.location?.longitude !== null\n        ? Number(data.location.longitude)\n        : null;\n\n    const accuracy = data.location?.accuracy !== null\n        ? Number(data.location.accuracy)\n        : null;\n\n    // -------------------------\n    // Device information\n    // -------------------------\n    const deviceName = String(data.device);\n\n    // -------------------------\n    // Sensor readings\n    // -------------------------\n    const humidityPercent = Number(\n        data.sensors.bme280.humidity_percent\n    );\n\n    const temperatureC = Number(\n        data.sensors.bme280.temperature_c\n    );\n\n    const pressureHpa = Number(\n        data.sensors.bme280.pressure_hpa\n    );\n\n    const altitudeM = Number(\n        data.sensors.bme280.altitude_m\n    );\n\n    // -------------------------\n    // Timestamp\n    // -------------------------\n    const timestampUnix = Number(data.timestamp);\n\n    // Convert Unix timestamp to JavaScript Date object\n    const timestampDate = new Date(timestampUnix * 1000);\n\n    // -------------------------\n    // Return clean structured object\n    // -------------------------\n    return {\n        latitude,\n        longitude,\n        accuracy,\n        deviceName,\n        humidityPercent,\n        temperatureC,\n        pressureHpa,\n        altitudeM,\n        timestampUnix,\n        timestampDate\n    };\n}",
+        "outputs": 1,
+        "timeout": 0,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 600,
+        "y": 100,
+        "wires": [
+            [
+                "6d447c04eb2fa30a",
+                "174e6b7c8c06ee36",
+                "75b0cc4e750a8f04"
+            ]
+        ]
+    },
+    {
+        "id": "78b80b6870d762df",
+        "type": "json",
+        "z": "07924ea1e91d19b0",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": true,
+        "x": 390,
+        "y": 100,
+        "wires": [
+            [
+                "1900c6a449ce2cc9",
+                "73963721c134ab4f"
+            ]
+        ]
+    },
+    {
+        "id": "6d447c04eb2fa30a",
+        "type": "ui_table",
+        "z": "07924ea1e91d19b0",
+        "group": "4c8f8c4c02e7078d",
+        "name": "Sensor Data and GPS table",
+        "order": 2,
+        "width": 8,
+        "height": 8,
+        "columns": [
+            {
+                "field": "latitude",
+                "title": "Latitude",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "Longitude",
+                "title": "Longitude",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "accuracy",
+                "title": "Accuracy",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "deviceName",
+                "title": "Device ID",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "humidityPercent",
+                "title": "Humidity Percentage",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "temperatureC",
+                "title": "Temperature C",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "pressureHpa",
+                "title": "Pressure ",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "altitudeM",
+                "title": "Altitude (meters)",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            },
+            {
+                "field": "timestampDate",
+                "title": "Date Time Stamp",
+                "width": "",
+                "align": "left",
+                "formatter": "plaintext",
+                "formatterParams": {
+                    "target": "_blank"
+                }
+            }
+        ],
+        "outputs": 0,
+        "cts": false,
+        "x": 900,
+        "y": 100,
+        "wires": [],
+        "info": "        latitude,\n        longitude,\n        accuracy,\n        deviceName,\n        humidityPercent,\n        temperatureC,\n        pressureHpa,\n        altitudeM,\n        timestampUnix,\n        timestampDate"
+    },
+    {
+        "id": "174e6b7c8c06ee36",
+        "type": "ui_worldmap",
+        "z": "07924ea1e91d19b0",
+        "group": "4c8f8c4c02e7078d",
+        "order": 1,
+        "width": 8,
+        "height": 7,
+        "name": "",
+        "lat": "",
+        "lon": "",
+        "zoom": "",
+        "layer": "OSMG",
+        "cluster": "",
+        "maxage": "",
+        "usermenu": "hide",
+        "layers": "hide",
+        "panit": "false",
+        "panlock": "false",
+        "zoomlock": "false",
+        "hiderightclick": "true",
+        "coords": "none",
+        "showgrid": "false",
+        "showruler": "false",
+        "allowFileDrop": "false",
+        "path": "/worldmap",
+        "overlist": "DR,CO,RA,DN,HM",
+        "maplist": "OSMG,OSMC,EsriC,EsriS,EsriT,EsriDG,UKOS",
+        "mapname": "",
+        "mapurl": "",
+        "mapopt": "",
+        "mapwms": false,
+        "x": 840,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "d3bb31dfcc0452d6",
+        "type": "http in",
+        "z": "07924ea1e91d19b0",
+        "name": "sensor-data",
+        "url": "http://192.168.1.17:1880/sensor-data",
+        "method": "post",
+        "upload": true,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 160,
+        "wires": [
+            [
+                "78b80b6870d762df",
+                "10e3257a4418fae0",
+                "36895783be407c0f",
+                "5639e638a2552f02"
+            ]
+        ]
+    },
+    {
+        "id": "36895783be407c0f",
+        "type": "http response",
+        "z": "07924ea1e91d19b0",
+        "name": "",
+        "statusCode": "msg.200",
+        "headers": {
+            "content-type": "text/plain"
+        },
+        "x": 420,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "5639e638a2552f02",
+        "type": "debug",
+        "z": "07924ea1e91d19b0",
+        "name": "debug 1",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 280,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "73963721c134ab4f",
+        "type": "debug",
+        "z": "07924ea1e91d19b0",
+        "name": "debug 2",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 600,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "75b0cc4e750a8f04",
+        "type": "debug",
+        "z": "07924ea1e91d19b0",
+        "name": "debug 3",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 820,
+        "y": 20,
+        "wires": []
+    },
+    {
+        "id": "3794f677915a57a5",
+        "type": "ui_group",
+        "name": "Locator Device 1",
+        "tab": "7a187c28045f94ee",
+        "order": 2,
+        "disp": true,
+        "width": 8,
+        "collapse": true,
+        "className": ""
+    },
+    {
+        "id": "a1d00f67ce3d3fe7",
+        "type": "ui-group",
+        "name": "Group 1",
+        "page": "d287143d758e2b37",
+        "width": 6,
+        "height": 1,
+        "order": 1,
+        "showTitle": true,
+        "className": "",
+        "visible": true,
+        "disabled": false,
+        "groupType": "default"
+    },
+    {
+        "id": "4c8f8c4c02e7078d",
+        "type": "ui_group",
+        "name": "Locator Device 2",
+        "tab": "7a187c28045f94ee",
+        "order": 1,
+        "disp": true,
+        "width": 8,
+        "collapse": true,
+        "className": ""
+    },
+    {
+        "id": "7a187c28045f94ee",
+        "type": "ui_tab",
+        "name": "Home",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "d287143d758e2b37",
+        "type": "ui-page",
+        "name": "Page 1",
+        "ui": "c4fdd956a444241d",
+        "path": "/page1",
+        "icon": "home",
+        "layout": "tabs",
+        "theme": "13595040b02bfd0d",
+        "breakpoints": [
+            {
+                "name": "Default",
+                "px": "0",
+                "cols": "3"
+            },
+            {
+                "name": "Tablet",
+                "px": "576",
+                "cols": "6"
+            },
+            {
+                "name": "Small Desktop",
+                "px": "768",
+                "cols": "9"
+            },
+            {
+                "name": "Desktop",
+                "px": "1024",
+                "cols": "12"
+            }
+        ],
+        "order": 1,
+        "className": "",
+        "visible": "true",
+        "disabled": "false"
+    },
+    {
+        "id": "c4fdd956a444241d",
+        "type": "ui-base",
+        "name": " Dashboard",
+        "path": "/dashboard",
+        "appIcon": "",
+        "includeClientData": true,
+        "acceptsClientConfig": [
+            "ui-notification",
+            "ui-control"
+        ],
+        "showPathInSidebar": false,
+        "headerContent": "page",
+        "navigationStyle": "default",
+        "titleBarStyle": "default",
+        "showReconnectNotification": true,
+        "notificationDisplayTime": 1,
+        "showDisconnectNotification": true,
+        "allowInstall": true
+    },
+    {
+        "id": "13595040b02bfd0d",
+        "type": "ui-theme",
+        "name": "Default Theme",
+        "colors": {
+            "surface": "#ffffff",
+            "primary": "#0094CE",
+            "bgPage": "#eeeeee",
+            "groupBg": "#ffffff",
+            "groupOutline": "#cccccc"
+        },
+        "sizes": {
+            "density": "default",
+            "pagePadding": "12px",
+            "groupGap": "12px",
+            "groupBorderRadius": "4px",
+            "widgetGap": "12px"
+        }
+    }
+]
