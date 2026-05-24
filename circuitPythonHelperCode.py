@@ -1,0 +1,177 @@
+# save file to lib then add:
+# from circuitPythonHelperCode import setup_wifi, setup_mqtt, setup_bme280, publish_sensor_data,  get_wifi_geolocation,  get_bme280_data
+import time
+import board
+import busio
+import wifi
+import socketpool
+import ssl
+import json
+from adafruit_minimqtt.adafruit_minimqtt import MQTT
+#import adafruit_bme280
+from adafruit_bme280 import basic as adafruit_bme280
+import adafruit_requests
+
+
+WIFI_SSID = "BB"
+WIFI_PASSWORD = "6KH1jk1mn0s"
+MQTT_BROKER = "test.mosquitto.org"  # Or use your own broker
+MQTT_PORT = 1883
+MQTT_USERNAME = None  # Set if your broker requires auth
+MQTT_PASSWORD = None
+MQTT_TOPIC_PUBLISH = "circuitpython/sensordata"
+
+# GPS/Geolocation settings
+USE_WIFI_GEOLOCATION = True
+MOZILLA_API_KEY = "https://location.services.mozilla.com/v1/geolocate?key=test"  # Use "test" for demo, request your own for production
+
+# Sensor update interval (15 minutes = 900 seconds)
+UPDATE_INTERVAL = 900
+
+# ============================================================================
+# GLOBAL VARIABLES
+# ============================================================================
+mqtt_client = None
+bme280_sensor = None
+last_update_time = 0
+location_data = {"latitude": None, "longitude": None, "accuracy": None}
+
+def setup_wifi():
+    """Connect to WiFi network"""
+    print(f"Connecting to WiFi: {WIFI_SSID}")
+    wifi.radio.connect(WIFI_SSID, WIFI_PASSWORD)
+    print(f"WiFi connected! IP: {wifi.radio.ipv4_address}")
+    return wifi.radio.ipv4_address
+
+def setup_mqtt(pool):
+    """Initialize and connect to MQTT broker"""
+    print(f"Connecting to MQTT broker: {MQTT_BROKER}:{MQTT_PORT}")
+    
+    mqtt = MMQTT(
+        broker=MQTT_BROKER,
+        port=MQTT_PORT,
+        socket_pool=pool,
+        ssl_context=None,
+        username=MQTT_USERNAME,
+        password=MQTT_PASSWORD,
+        client_id="CircuitPython_Sensor",
+        keep_alive=60
+    )
+    
+    # Set up callback for message receipt
+    def message_callback(client, topic, message):
+        print(f"Message received on {topic}: {message}")
+    
+    mqtt.on_message = message_callback
+    mqtt.connect()
+    print("MQTT connected!")
+    return mqtt
+
+def setup_bme280():
+    """Initialize BME280 I2C sensor"""
+    print("Initializing BME280 sensor...")
+    i2c = busio.I2C(board.GP1, board.GP0)  # 
+    sensor = adafruit_bme280.Adafruit_BME280_I2C(i2c, address=0x76)
+    
+    # Optional: Set sea level pressure for accurate altitude calculation
+    # sensor.sea_level_pressure = 1013.25
+    
+    print("BME280 sensor initialized!")
+    return sensor
+
+def publish_sensor_data(requests_session):
+    """Collect all sensor data and publish to MQTT"""
+    global location_data
+    
+    print("\n" + "="*50)
+    print(f"Publishing sensor data at {time.time()}")
+    print("="*50)
+    
+    # Get BME280 data
+    bme_data = get_bme280_data()
+    if bme_data is None:
+        print("Failed to read BME280 sensor")
+        return False
+    
+    # Get WiFi geolocation
+    location = get_wifi_geolocation(requests_session)
+    if location:
+        location_data = location
+    
+    # Prepare combined payload
+    payload = {
+        "timestamp": int(time.time()),
+        "device": "CircuitPython_Sensor",
+        "location": location_data,
+        "sensors": {
+            "bme280": bme_data
+        }
+    }
+    
+    # Publish to MQTT
+    try:
+#        mqtt_client.publish(MQTT_TOPIC_PUBLISH, json.dumps(payload))
+        print(f"Published: {json.dumps(payload)}")
+        return True
+    except Exception as e:
+        print(f"Error publishing to MQTT: {e}")
+        return False
+    
+def get_wifi_geolocation(requests_session):
+    """Get geolocation from WiFi networks using Mozilla Location Service"""
+    if not USE_WIFI_GEOLOCATION:
+        return None
+    
+    try:
+        print("Scanning WiFi networks for geolocation...")
+        networks = []
+        
+        # Scan nearby WiFi networks
+        for network in wifi.radio.start_scanning_networks():
+            networks.append({
+                "macAddress": "".join([f"{x:02x}" for x in network.bssid]),
+                "signalStrength": network.rssi
+            })
+            if len(networks) >= 10:  # Limit to 10 networks to save data
+                break
+        
+        wifi.radio.stop_scanning_networks()
+        
+        if not networks:
+            print("No WiFi networks found for geolocation")
+            return None
+        
+        # Request geolocation from Mozilla
+        url = f"https://location.services.mozilla.com/v1/geolocate?key={MOZILLA_API_KEY}"
+        body = {"wifiAccessPoints": networks}
+        
+        response = requests_session.post(url, json=body)
+        geo_data = response.json()
+        
+        location = {
+            "latitude": round(geo_data.get("location", {}).get("lat"), 6),
+            "longitude": round(geo_data.get("location", {}).get("lng"), 6),
+            "accuracy": round(geo_data.get("accuracy", 0), 2)
+        }
+        
+        print(f"Geolocation: {location}")
+        return location
+    
+    except Exception as e:
+        print(f"Error getting geolocation: {e}")
+        return None
+    
+def get_bme280_data():
+    """Read temperature, humidity, and pressure from BME280"""
+    try:
+        data = {
+            "temperature_c": round(bme280_sensor.temperature, 2),
+            "humidity_percent": round(bme280_sensor.relative_humidity, 2),
+            "pressure_hpa": round(bme280_sensor.pressure, 2),
+            "altitude_m": round(bme280_sensor.altitude, 2)
+        }
+        print(f"BME280 Data: {data}")
+        return data
+    except Exception as e:
+        print(f"Error reading BME280: {e}")
+        return None
