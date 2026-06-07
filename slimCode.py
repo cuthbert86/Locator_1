@@ -11,8 +11,8 @@ from adafruit_minimqtt.adafruit_minimqtt import MQTT
 from adafruit_bme280 import basic as adafruit_bme280
 import adafruit_requests
 
-WIFI_SSID = "BB"
-WIFI_PASSWORD = "6KH1jk1mn0s"
+WIFI_SSID = ""
+WIFI_PASSWORD = ""
 
 MQTT_BROKER = "localhost"  # Or use your own broker
 MQTT_PORT = 1883
