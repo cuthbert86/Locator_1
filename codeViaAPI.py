@@ -11,8 +11,8 @@ from adafruit_minimqtt.adafruit_minimqtt import MQTT
 from adafruit_bme280 import basic as adafruit_bme280
 import adafruit_requests
 
-WIFI_SSID = "BB"
-WIFI_PASSWORD = "6KH1jk1mn0s"
+WIFI_SSID = ""
+WIFI_PASSWORD = ""
 # Node-RED API settings
 NODE_RED_URL = "http://192.168.1.17:1880/sensor-data"  # Change IP to your Node-RED server
 NODE_RED_PORT = 1880
