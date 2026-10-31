@@ -5,7 +5,7 @@ import busio
 import adafruit_ssd1306
 
 # Create I2C interface
-i2c = busio.I2C(board.SCL, board.SDA)
+i2c = busio.I2C(board.SCL, board.SDA) # I2C address is probably 0x3C or 0x3D
 
 # Create display object (128x64, default I2C address 0x3C)
 display = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
